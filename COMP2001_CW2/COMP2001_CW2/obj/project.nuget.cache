@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "YnlhdoUw8xlR5tIrLJ+BFyg1UKsc6+bAySX0WolrlGRbIWYsz3D1aI/b6Te0phZfLZwEexVIIfORZcqmabPEEQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\tobip\\source\\repos\\COMP-2001-API\\COMP2001_CW2\\COMP2001_CW2\\COMP2001_CW2.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\tobip\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "C:\\Users\\tobip\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
+    "C:\\Users\\tobip\\.nuget\\packages\\swashbuckle.aspnetcore\\6.4.0\\swashbuckle.aspnetcore.6.4.0.nupkg.sha512",
+    "C:\\Users\\tobip\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.4.0\\swashbuckle.aspnetcore.swagger.6.4.0.nupkg.sha512",
+    "C:\\Users\\tobip\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.4.0\\swashbuckle.aspnetcore.swaggergen.6.4.0.nupkg.sha512",
+    "C:\\Users\\tobip\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.4.0\\swashbuckle.aspnetcore.swaggerui.6.4.0.nupkg.sha512"
+  ],
+  "logs": []
+}
