@@ -16,7 +16,7 @@ namespace COMP2001_CW2.Models
 
         //Setup foreign key for this table
         [ForeignKey("ActivityID")]
-        public Activity_Name_Table ActivityNameTable { get; set; }
+        public List<Activity_Link_Table> activityLinkTableLink { get; set; }
 
     }
 }

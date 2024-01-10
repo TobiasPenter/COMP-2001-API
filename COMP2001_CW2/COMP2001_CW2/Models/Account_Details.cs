@@ -32,7 +32,7 @@ namespace COMP2001_CW2.Models
         public DateTime? Birthday { get; set; }
 
         //Setup foreign keys for other tables
-        public Activity_Link_Table Activity_Link_Table { get; set; }
-        public Measurements measurements { get; set; }
+        public List<Activity_Link_Table> activityLinkTableLink { get; set; }
+        public List<Measurements> measurementsLink { get; set; }
     }
 }

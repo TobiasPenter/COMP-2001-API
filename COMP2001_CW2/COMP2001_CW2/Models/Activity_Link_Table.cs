@@ -16,9 +16,9 @@ namespace COMP2001_CW2.Models
 
         //Setup the foreign key in this table
         [ForeignKey("Email")]
-        public Account_Details Account_Details { get; set; }
+        public Account_Details accountDetailsLink { get; set; }
 
         //Setup foreign key for other tables
-        public Activity_Link_Table Activity_Name_Table { get; set; }
+        public Activity_Name_Table activityNameTableLink { get; set; }
     }
 }
