@@ -2,8 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\COMP2001_CW2",
-    "\\COMP2001_CW2\\COMP2001_CW2"
+    "\\COMP2001_CW2\\COMP2001_CW2",
+    "\\COMP2001_CW2\\COMP2001_CW2\\Models"
   ],
-  "SelectedNode": "\\COMP2001_CW2\\COMP2001_CW2\\appsettings.Development.json",
+  "SelectedNode": "\\COMP2001_CW2\\COMP2001_CW2\\Program.cs",
   "PreviewInSolutionExplorer": false
 }
