@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
-namespace COMP2001_CW2.Models
+namespace COMP2001_CW2.Models.Tables
 {
     public class Measurements
     {
@@ -13,7 +13,9 @@ namespace COMP2001_CW2.Models
         public string Email { get; set; }
         [NotNull]
         public bool Units { get; set; }
+        [MaybeNull]
         public float UserWeight { get; set; }
+        [MaybeNull]
         public float UserHeight { get; set; }
 
 

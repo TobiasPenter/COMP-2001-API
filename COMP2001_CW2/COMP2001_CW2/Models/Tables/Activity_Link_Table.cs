@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
-namespace COMP2001_CW2.Models
+namespace COMP2001_CW2.Models.Tables
 {
     public class Activity_Link_Table
     {
@@ -10,7 +10,7 @@ namespace COMP2001_CW2.Models
         [Key]
         [NotNull]
         [MaxLength(100)]
-        public string Email {  get; set; }
+        public string Email { get; set; }
         [NotNull]
         public int ActivityID { get; set; }
 

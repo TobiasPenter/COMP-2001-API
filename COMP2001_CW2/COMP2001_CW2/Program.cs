@@ -4,9 +4,20 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-builder.Services.AddDbContext<Context>(Connection => {Connection.UseSqlServer(builder.Configuration.GetConnectionString("MyConnection"));});
+builder.Services.AddDbContext<ContextForDB>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("MyConnection");
+
+    // Append TrustServerCertificate to the connection string
+    connectionString += ";TrustServerCertificate=True";
+
+    options.UseSqlServer(connectionString, sqlServerOptionsAction: sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure();
+    });
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -21,9 +32,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

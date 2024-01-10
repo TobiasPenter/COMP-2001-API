@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
-namespace COMP2001_CW2.Models
+namespace COMP2001_CW2.Models.Tables
 {
-    public class Account_Details
+    public class Archived_Accounts
     {
         //Define the table
         [Key]
@@ -18,21 +17,19 @@ namespace COMP2001_CW2.Models
         [MaxLength(40)]
         public string LastName { get; set; }
         [NotNull]
-        [MaxLength (40)]
-        public string Username {  get; set; }
+        [MaxLength(40)]
+        public string Username { get; set; }
         [NotNull]
         [MaxLength(40)]
         public string UserPassword { get; set; }
+        [MaybeNull]
         public byte[] ProfilePicture { get; set; }
+        [MaybeNull]
         [MaxLength(255)]
         public string AboutMe { get; set; }
         [NotNull]
         public bool ActivitySpeedPacePreference { get; set; }
         [NotNull]
         public DateTime? Birthday { get; set; }
-
-        //Setup foreign keys for other tables
-        public List<Activity_Link_Table> activityLinkTableLink { get; set; }
-        public List<Measurements> measurementsLink { get; set; }
     }
 }
