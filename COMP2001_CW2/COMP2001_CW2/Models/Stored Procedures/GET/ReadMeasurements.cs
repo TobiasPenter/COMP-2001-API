@@ -1,13 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
-namespace COMP2001_CW2.Models.Tables
+namespace COMP2001_CW2.Models.Stored_Procedures.GET
 {
-    public class Measurements
+    public class ReadMeasurements
     {
-        //Define the table
-        [Key]
+
         [NotNull]
         [MaxLength(100)]
         public string Email { get; set; }
@@ -18,9 +16,5 @@ namespace COMP2001_CW2.Models.Tables
         [MaybeNull]
         public double UserHeight { get; set; }
 
-
-        //Setup foreign key
-        [ForeignKey("Email")]
-        public Account_Details accountDetailsLink { get; set; }
     }
 }

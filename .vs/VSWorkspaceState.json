@@ -3,8 +3,12 @@
     "",
     "\\COMP2001_CW2",
     "\\COMP2001_CW2\\COMP2001_CW2",
-    "\\COMP2001_CW2\\COMP2001_CW2\\Context"
+    "\\COMP2001_CW2\\COMP2001_CW2\\Context",
+    "\\COMP2001_CW2\\COMP2001_CW2\\Models",
+    "\\COMP2001_CW2\\COMP2001_CW2\\Models\\Stored Procedures",
+    "\\COMP2001_CW2\\COMP2001_CW2\\Models\\Stored Procedures\\GET",
+    "\\COMP2001_CW2\\COMP2001_CW2\\Models\\Tables"
   ],
-  "SelectedNode": "\\COMP2001_CW2\\COMP2001_CW2\\Program.cs",
+  "SelectedNode": "\\COMP2001_CW2\\COMP2001_CW2.sln",
   "PreviewInSolutionExplorer": false
 }

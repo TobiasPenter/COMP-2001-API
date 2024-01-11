@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace COMP2001_CW2.Models.Tables
+namespace COMP2001_CW2.Models.Stored_Procedures.GET
 {
-    public class Archived_Accounts
+    public class ReadAccountDetailsAdmin
     {
-        //Define the table
-        [Key]
+
         [NotNull]
         [MaxLength(100)]
         public string Email { get; set; }
@@ -31,5 +30,6 @@ namespace COMP2001_CW2.Models.Tables
         public bool ActivitySpeedPacePreference { get; set; }
         [NotNull]
         public DateTime? Birthday { get; set; }
+
     }
 }
