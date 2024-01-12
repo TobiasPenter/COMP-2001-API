@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace COMP2001_CW2.Models.Stored_Procedures
+namespace COMP2001_CW2.Models.Stored_Procedures.POST
 {
-    public class AllAccountDetailsAdmin
+    public class NewUser
     {
 
         [NotNull]
@@ -29,7 +29,7 @@ namespace COMP2001_CW2.Models.Stored_Procedures
         [NotNull]
         public bool ActivitySpeedPacePreference { get; set; }
         [NotNull]
-        public DateTime? Birthday { get; set; }
+        public string Birthday { get; set; }
 
     }
 }

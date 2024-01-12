@@ -1,6 +1,7 @@
 ﻿using COMP2001_CW2.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
 namespace COMP2001_CW2.Controllers
 {
@@ -178,6 +179,60 @@ namespace COMP2001_CW2.Controllers
                     {
                         return BadRequest("Activity doesn't exist");
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+
+        //Adding a new tag option
+        [HttpPost("Add an Activity to the Database (Admin)")]
+        public async Task<IActionResult> PostNewActivityNameAsync(string activityName)
+        {
+            try
+            {
+                var activities = await _context.ReadAllActivitiesAsync();
+                var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == activityName);
+                if (matchingActivity != null)
+                {
+                    return BadRequest("Activity already exists");
+                }
+                else
+                {
+                    _context.NewActivityNameAsync(activityName);
+                    return Ok("New activity made");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+
+        //Adding a new tag option
+        [HttpPost("Create an Account")]
+        public async Task<IActionResult> PostNewAccountAsync(string email, string firstName, string lastName, string username, string password, string profilePicture, string aboutMe, string memberLocation, bool activitySpeedPacePreference, DateOnly birthday, bool units, double weight, double height)
+        {
+            try
+            {
+                var accounts = await _context.AllAccountDetailsAsync();
+                var takenAccount = accounts.FirstOrDefault(a => a.Email == email);
+                if (takenAccount != null)
+                {
+                    return BadRequest("Email already in use");
+                }
+                else
+                {
+                    byte[] profilePictureBytes;
+                    using (HttpClient client = new HttpClient()) { profilePictureBytes = await client.GetByteArrayAsync(profilePicture); }
+
+                    string dateFormated = birthday.ToString("yyyy-MM-dd");
+
+                    await _context.NewUserAsync(email, firstName, lastName, username, password, profilePictureBytes, aboutMe, memberLocation, activitySpeedPacePreference, dateFormated);
+                    await _context.NewMeasurementsAsync(email, units, weight, height);
+                    return Ok("Account made");
                 }
             }
             catch (Exception ex)

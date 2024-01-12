@@ -26,6 +26,9 @@ namespace COMP2001_CW2.Context
 
         //POST
         public DbSet<NewActivityLink> newActivityLink { get; set; }
+        public DbSet<NewActivityName> newActivityName { get; set; }
+        public DbSet<NewMeasurements> newMeasurements { get; set; }
+        public DbSet<NewUser> newUser { get; set; }
 
 
         public ContextForDB(DbContextOptions<ContextForDB>options):base(options) {}
@@ -75,6 +78,15 @@ namespace COMP2001_CW2.Context
             modelBuilder.Entity<NewActivityLink>()
                 .HasNoKey();
 
+            modelBuilder.Entity<NewActivityName>()
+                .HasNoKey();
+
+            modelBuilder.Entity<NewMeasurements>()
+                .HasNoKey();
+
+            modelBuilder.Entity<NewUser>()
+                .HasNoKey();
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -111,9 +123,38 @@ namespace COMP2001_CW2.Context
         }
 
         //POST
-        public async void NewActivityLinkAsync(string email, int activityId)
+        public async Task NewActivityLinkAsync(string email, int activityId)
         {
-            await newActivityLink.FromSqlRaw("EXEC CW2.NewActivityLink @Email, @ActivityID",new SqlParameter("@Email", email),new SqlParameter("@ActivityID", activityId)).ToListAsync();
+            await newActivityLink.FromSqlRaw("EXEC CW2.NewActivityLink @Email, @ActivityID", new SqlParameter("@Email", email), new SqlParameter("@ActivityID", activityId)).ToListAsync();
+        }
+
+        public async Task NewActivityNameAsync(string activityName)
+        {
+            await newActivityName.FromSqlRaw("EXEC CW2.NewActivityName @ActivityName", new SqlParameter("@ActivityName", activityName)).ToListAsync();
+        }
+
+        public async Task NewMeasurementsAsync(string email, bool units, double weight, double height)
+        {
+            await Database.ExecuteSqlRawAsync("EXEC CW2.NewMeasurements @Email, @Units, @UserHeight, @UserWeight", 
+                new SqlParameter("@Email", email),
+                new SqlParameter("@Units", units),
+                new SqlParameter("@UserHeight", height),
+                new SqlParameter("@UserWeight", weight));
+        }
+
+        public async Task NewUserAsync(string email, string firstName, string lastName, string username, string password, byte[] profilePicture, string aboutMe, string memberLocation, bool activitySpeedPacePreference, string birthday)
+        {
+            await Database.ExecuteSqlRawAsync("EXEC CW2.NewUser @Email, @FirstName, @LastName, @Username, @UserPassword, @ProfilePicture, @AboutMe, @MemberLocation, @ActivitySpeedPacePreference, @Birthday",
+                new SqlParameter("@Email", email),
+                new SqlParameter("@FirstName", firstName),
+                new SqlParameter("@LastName", lastName),
+                new SqlParameter("@Username", username),
+                new SqlParameter("@UserPassword", password),
+                new SqlParameter("@ProfilePicture", profilePicture),
+                new SqlParameter("@AboutMe", aboutMe),
+                new SqlParameter("@MemberLocation", memberLocation),
+                new SqlParameter("@ActivitySpeedPacePreference", activitySpeedPacePreference),
+                new SqlParameter("@Birthday", birthday));
         }
     }
 }
