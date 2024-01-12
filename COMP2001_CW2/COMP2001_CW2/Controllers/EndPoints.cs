@@ -172,7 +172,7 @@ namespace COMP2001_CW2.Controllers
                     if (matchingActivity != null)
                     {
                         int id = matchingActivity.ActivityID;
-                        _context.NewActivityLinkAsync(email, id);
+                        await _context.NewActivityLinkAsync(email, id);
                         return Ok("Activity saved");
                     }
                     else 
@@ -201,7 +201,7 @@ namespace COMP2001_CW2.Controllers
                 }
                 else
                 {
-                    _context.NewActivityNameAsync(activityName);
+                    await _context.NewActivityNameAsync(activityName);
                     return Ok("New activity made");
                 }
             }
@@ -211,7 +211,7 @@ namespace COMP2001_CW2.Controllers
             }
         }
 
-        //Adding a new tag option
+        //Adding a new user
         [HttpPost("Create an Account")]
         public async Task<IActionResult> PostNewAccountAsync(string email, string firstName, string lastName, string username, string password, string profilePicture, string aboutMe, string memberLocation, bool activitySpeedPacePreference, DateOnly birthday, bool units, double weight, double height)
         {
@@ -233,6 +233,88 @@ namespace COMP2001_CW2.Controllers
                     await _context.NewUserAsync(email, firstName, lastName, username, password, profilePictureBytes, aboutMe, memberLocation, activitySpeedPacePreference, dateFormated);
                     await _context.NewMeasurementsAsync(email, units, weight, height);
                     return Ok("Account made");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+
+        //Delete an account
+        [HttpDelete("Delete a User (Admin)")]
+        public async Task<IActionResult> DeleteAccountAsync(string email)
+        {
+            try
+            {
+                var accounts = await _context.AllAccountDetailsAsync();
+                var takenAccount = accounts.FirstOrDefault(a => a.Email == email);
+                if (takenAccount != null)
+                {
+                    await _context.DeleteAccountAsync(email);
+                    return Ok("Account deleted");
+                }
+                else
+                {
+                    return BadRequest("The account doesn't exist");
+                }
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+
+        //Delete an activity linked to an account
+        [HttpDelete("Delete an Activity From Your Account")]
+        public async Task<IActionResult> DeleteActivityLinkAsync(string email, string activityName)
+        {
+            try
+            {
+                var activitiesInAccount = await _context.ReadAccountActivitiesAsync(email);
+                if (activitiesInAccount.Any(a => a.ActivityName == activityName))
+                {
+                    var activities = await _context.ReadAllActivitiesAsync();
+                    var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == activityName);
+                    if (matchingActivity != null)
+                    {
+                        int id = matchingActivity.ActivityID;
+                        await _context.DeleteActivityFromAccountAsync(email, id);
+                        return Ok("Activity deleted");
+                    }
+                    else
+                    {
+                        return BadRequest("Activity doesn't exist");
+                    }
+                }
+                else
+                {
+                    return BadRequest("You don't have this activity on the account");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+
+        //Delete an activity linked to an account
+        [HttpDelete("Delete an Activity From System (Admin)")]
+        public async Task<IActionResult> DeleteActivityAsync(string activityName)
+        {
+            try
+            {
+                var activities = await _context.ReadAllActivitiesAsync();
+                var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == activityName);
+                if (matchingActivity != null)
+                {
+                    int id = matchingActivity.ActivityID;
+                    await _context.DeleteActivityFromSystemAsync(id);
+                    return Ok("Activity deleted");
+                }
+                else
+                {
+                    return BadRequest("Activity doesn't exist");
                 }
             }
             catch (Exception ex)

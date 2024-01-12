@@ -4,6 +4,7 @@ using COMP2001_CW2.Models.Stored_Procedures;
 using Microsoft.Data.SqlClient;
 using COMP2001_CW2.Models.Stored_Procedures.GET;
 using COMP2001_CW2.Models.Stored_Procedures.POST;
+using COMP2001_CW2.Models.Stored_Procedures.DELETE;
 
 namespace COMP2001_CW2.Context
 {
@@ -29,6 +30,11 @@ namespace COMP2001_CW2.Context
         public DbSet<NewActivityName> newActivityName { get; set; }
         public DbSet<NewMeasurements> newMeasurements { get; set; }
         public DbSet<NewUser> newUser { get; set; }
+
+        //DELETE
+        public DbSet<DeleteAccount> deleteAccounts { get; set; }
+        public DbSet<DeleteActivityFromAccount> deleteActivityFromAccounts { get; set; }
+        public DbSet<DeleteActivityFromSystem> deleteActivityFromSystem { get; set; }
 
 
         public ContextForDB(DbContextOptions<ContextForDB>options):base(options) {}
@@ -85,6 +91,16 @@ namespace COMP2001_CW2.Context
                 .HasNoKey();
 
             modelBuilder.Entity<NewUser>()
+                .HasNoKey();
+
+            //DELETE
+            modelBuilder.Entity<DeleteAccount>()
+                .HasNoKey();
+
+            modelBuilder.Entity<DeleteActivityFromAccount>()
+                .HasNoKey();
+
+            modelBuilder.Entity<DeleteActivityFromSystem>()
                 .HasNoKey();
 
             base.OnModelCreating(modelBuilder);
@@ -155,6 +171,22 @@ namespace COMP2001_CW2.Context
                 new SqlParameter("@MemberLocation", memberLocation),
                 new SqlParameter("@ActivitySpeedPacePreference", activitySpeedPacePreference),
                 new SqlParameter("@Birthday", birthday));
+        }
+
+        //DELETE
+        public async Task DeleteAccountAsync(string email)
+        {
+            await Database.ExecuteSqlRawAsync("EXEC CW2.DeleteAccount @Email", new SqlParameter("@Email", email));
+        }
+
+        public async Task DeleteActivityFromAccountAsync(string email, int activityId)
+        {
+            await Database.ExecuteSqlRawAsync("EXEC CW2.DeleteActivityFromAccount @Email, @ActivityID", new SqlParameter("@Email", email), new SqlParameter("@ActivityID", activityId));
+        }
+
+        public async Task DeleteActivityFromSystemAsync(int activityId)
+        {
+            await Database.ExecuteSqlRawAsync("EXEC CW2.DeleteActivityFromSystem @ActivityID", new SqlParameter("@ActivityID", activityId));
         }
     }
 }

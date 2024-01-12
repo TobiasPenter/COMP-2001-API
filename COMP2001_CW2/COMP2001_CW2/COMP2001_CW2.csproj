@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Stored Procedures\DELETE\" />
     <Folder Include="Models\Stored Procedures\PUT\" />
   </ItemGroup>
 
