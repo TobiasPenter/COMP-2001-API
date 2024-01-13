@@ -283,10 +283,14 @@ namespace COMP2001_CW2.Controllers
                 }
                 else
                 {
+
+                    DateOnly unformatedDate = (DateOnly)inputs.newBirthday;
+                    string formatedDate = unformatedDate.ToString();
+
                     byte[] profilePictureBytes;
                     using (HttpClient client = new HttpClient()) { profilePictureBytes = await client.GetByteArrayAsync((string)inputs.profilePicture); }
 
-                    await _context.NewUserAsync((string)inputs.email, (string)inputs.firstName, (string)inputs.lastName, (string)inputs.username, (string)inputs.password, profilePictureBytes, (string)inputs.aboutMe, (string)inputs.memberLocation, (bool)inputs.activitySpeedPacePreference, (DateOnly)inputs.birthday);
+                    await _context.NewUserAsync((string)inputs.email, (string)inputs.firstName, (string)inputs.lastName, (string)inputs.username, (string)inputs.password, profilePictureBytes, (string)inputs.aboutMe, (string)inputs.memberLocation, (bool)inputs.activitySpeedPacePreference, formatedDate);
                     await _context.NewMeasurementsAsync((string)inputs.email, (bool)inputs.units, (double)inputs.weight, (double)inputs.height);
 
                     return Ok("Account made");
@@ -487,7 +491,10 @@ namespace COMP2001_CW2.Controllers
                     {
                         if ((string)inputs.email == loginEmail)
                         {
-                            await _context.UpdateBirthdayAsync((string)inputs.email, (DateOnly)inputs.newBirthday);
+                            DateOnly unformatedDate = (DateOnly)inputs.newBirthday;
+                            string formatedDate = unformatedDate.ToString();
+
+                            await _context.UpdateBirthdayAsync((string)inputs.email, formatedDate);
                             return Ok("Birthday updated");
                         }
                         else

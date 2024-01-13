@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\tobip\\Source\\Repos\\COMP-2001-API\\COMP2001_CW2\\COMP2001_CW2\\COMP2001_CW2.csproj": {}
+    "C:\\Users\\tobip\\source\\repos\\COMP-2001-API\\COMP2001_CW2\\COMP2001_CW2\\COMP2001_CW2.csproj": {}
   },
   "projects": {
-    "C:\\Users\\tobip\\Source\\Repos\\COMP-2001-API\\COMP2001_CW2\\COMP2001_CW2\\COMP2001_CW2.csproj": {
+    "C:\\Users\\tobip\\source\\repos\\COMP-2001-API\\COMP2001_CW2\\COMP2001_CW2\\COMP2001_CW2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tobip\\Source\\Repos\\COMP-2001-API\\COMP2001_CW2\\COMP2001_CW2\\COMP2001_CW2.csproj",
+        "projectUniqueName": "C:\\Users\\tobip\\source\\repos\\COMP-2001-API\\COMP2001_CW2\\COMP2001_CW2\\COMP2001_CW2.csproj",
         "projectName": "COMP2001_CW2",
-        "projectPath": "C:\\Users\\tobip\\Source\\Repos\\COMP-2001-API\\COMP2001_CW2\\COMP2001_CW2\\COMP2001_CW2.csproj",
+        "projectPath": "C:\\Users\\tobip\\source\\repos\\COMP-2001-API\\COMP2001_CW2\\COMP2001_CW2\\COMP2001_CW2.csproj",
         "packagesPath": "C:\\Users\\tobip\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\tobip\\Source\\Repos\\COMP-2001-API\\COMP2001_CW2\\COMP2001_CW2\\obj\\",
         "projectStyle": "PackageReference",

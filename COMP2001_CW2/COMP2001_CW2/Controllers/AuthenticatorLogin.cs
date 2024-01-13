@@ -19,7 +19,7 @@ namespace COMP2001_CW2.Controllers
 
             //Set request layout
             RequestLayout account = JsonSerializer.Deserialize<RequestLayout>(data);
-            EndPoints.loginEmail = account.Email;
+            EndPoints.loginEmail = account.email;
             using (HttpClient client = new HttpClient())
             {
                 //Send request for data
@@ -34,7 +34,7 @@ namespace COMP2001_CW2.Controllers
                 string[] responceArray = JsonSerializer.Deserialize<string[]>(responceString);
 
                 //Check data
-                if (responceArray != null)
+                if (responceArray == null)
                 {
                     return StatusCode(400, "Bad Request");
                 }
@@ -48,8 +48,8 @@ namespace COMP2001_CW2.Controllers
 
         public struct RequestLayout
         {
-            public string Email { get; set; }
-            public string Password { get; set; }
+            public string email { get; set; }
+            public string password { get; set; }
         }
 
     }
