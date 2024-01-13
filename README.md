@@ -23,7 +23,7 @@ This repository holds my code from throughout my development of the API for the 
 2. Delete_an_Activity_From_Your_Account
 3. Delete_an_Activity_From_System_Admin
 
-###Put
+### Put
 1. Update_Your_About_Me
 2. Update_Your_Activity_Speed_Pace_Preference
 3. Update_Your_Birthday
