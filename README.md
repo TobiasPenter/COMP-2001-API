@@ -6,12 +6,12 @@ This repository holds my code from throughout my development of the API for the 
 ## End Points
 
 ### Get
-Read_Account_Details
-All_Account_Details_Admin
-Read_Account_Details_Admin_Owner
-Read_All_Activities
-Read_Measurements_For_Account
-Read_Activities_For_Account
+\nRead_Account_Details
+\nAll_Account_Details_Admin
+\nRead_Account_Details_Admin_Owner
+\nRead_All_Activities
+\nRead_Measurements_For_Account
+\nRead_Activities_For_Account
 
 ### Post
 Add_an_Activity_to_Your_Account
