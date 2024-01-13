@@ -4,9 +4,16 @@ using Microsoft.AspNetCore.Mvc;
 namespace COMP2001_CW2.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[Controller]")]
     public class EndPoints : Controller
     {
+        //Hard coded admin (didn't know how else to do this).
+        private static string adminAccount = "grace@plymouth.ac.uk";
+
+        public static string loginStatus = "FALSE";
+
+        public static string loginEmail = "";
+
         private readonly ContextForDB _context;
 
         public EndPoints(ContextForDB context)
@@ -41,46 +48,54 @@ namespace COMP2001_CW2.Controllers
         [HttpGet("All_Account_Details_Admin")]
         public async Task<IActionResult> GetAllAccountDetails()
         {
-            try
+            if (loginEmail == adminAccount)
             {
-                var result = await _context.AllAccountDetailsAsync();
+                try
+                {
+                    var result = await _context.AllAccountDetailsAsync();
 
-                if (result != null && result.Any())
-                {
-                    return Ok(result);
+                    if (result != null && result.Any())
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        return NotFound("No data found for the provided email.");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    return NotFound("No data found for the provided email.");
+                    return StatusCode(500, $"Internal Server Error: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal Server Error: {ex.Message}");
-            }
+            return BadRequest("You don't have permision to run this command");
         }
 
         //Runs my code for ReadAccountDetailsAdmin sql and returns the result or a relecant error message
         [HttpGet("Read_Account_Details_Admin_Owner")]
         public async Task<IActionResult> GetAccountDetailsAdmin(string email)
         {
-            try
+            if(email == loginEmail || loginEmail == adminAccount)
             {
-                var result = await _context.ReadAccountDetailsAdminAsync(email);
+                try
+                {
+                    var result = await _context.ReadAccountDetailsAdminAsync(email);
 
-                if (result != null && result.Any())
-                {
-                    return Ok(result);
+                    if (result != null && result.Any())
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        return NotFound("No data found for the provided email.");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    return NotFound("No data found for the provided email.");
+                    return StatusCode(500, $"Internal Server Error: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal Server Error: {ex.Message}");
-            }
+            return BadRequest("You don't have permision to run this command");
         }
 
         //Runs my code for ReadAllActivities sql and returns the result or a relecant error message
@@ -110,103 +125,119 @@ namespace COMP2001_CW2.Controllers
         [HttpGet("Read_Measurements_For_Account")]
         public async Task<IActionResult> GetMeasurementsAsync(string email)
         {
-            try
+            if(email == loginEmail || loginEmail == adminAccount)
             {
-                var result = await _context.ReadMeasurementsAsync(email);
+                try
+                {
+                    var result = await _context.ReadMeasurementsAsync(email);
 
-                if (result != null && result.Any())
-                {
-                    return Ok(result);
+                    if (result != null && result.Any())
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        return NotFound("No data found for the provided email.");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    return NotFound("No data found for the provided email.");
+                    return StatusCode(500, $"Internal Server Error: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal Server Error: {ex.Message}");
-            }
+            return BadRequest("You don't have permision to run this command");
         }
 
         //Runs my code for ReadAccountActivities sql and returns the result or a relecant error message
         [HttpGet("Read_Activities_For_Account")]
         public async Task<IActionResult> GetAccountActivities(string email)
         {
-            try
+            if (email == loginEmail || loginEmail == adminAccount)
             {
-                var result = await _context.ReadAccountActivitiesAsync(email);
+                try
+                {
+                    var result = await _context.ReadAccountActivitiesAsync(email);
 
-                if (result != null && result.Any())
-                {
-                    return Ok(result);
+                    if (result != null && result.Any())
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        return NotFound("No data found for the provided email.");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    return NotFound("No data found for the provided email.");
+                    return StatusCode(500, $"Internal Server Error: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal Server Error: {ex.Message}");
-            }
+            return BadRequest("You don't have permision to run this command");
         }
 
         //Adding a tag to an account
         [HttpPost("Add_an_Activity_to_Your_Account")]
         public async Task<IActionResult> PostNewActivityAsync(string email, string activityName)
         {
-            try
+            if (email == loginEmail || loginEmail == adminAccount)
             {
-                var activitiesInAccount = await _context.ReadAccountActivitiesAsync(email);
-                if (activitiesInAccount.Any(a => a.ActivityName == activityName))
+                try
                 {
-                    return BadRequest("You already have this activity on the account");
+                    var activitiesInAccount = await _context.ReadAccountActivitiesAsync(email);
+                    if (activitiesInAccount.Any(a => a.ActivityName == activityName))
+                    {
+                        return BadRequest("You already have this activity on the account");
+                    }
+                    else
+                    {
+                        var activities = await _context.ReadAllActivitiesAsync();
+                        var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == activityName);
+                        if (matchingActivity != null)
+                        {
+                            int id = matchingActivity.ActivityID;
+                            await _context.NewActivityLinkAsync(email, id);
+                            return Ok("Activity saved");
+                        }
+                        else
+                        {
+                            return BadRequest("Activity doesn't exist");
+                        }
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    var activities = await _context.ReadAllActivitiesAsync();
-                    var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == activityName);
-                    if (matchingActivity != null)
-                    {
-                        int id = matchingActivity.ActivityID;
-                        await _context.NewActivityLinkAsync(email, id);
-                        return Ok("Activity saved");
-                    }
-                    else 
-                    {
-                        return BadRequest("Activity doesn't exist");
-                    }
+                    return StatusCode(500, $"Internal Server Error: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal Server Error: {ex.Message}");
-            }
+            return BadRequest("You don't have permision to run this command");
         }
 
         //Adding a new tag option
         [HttpPost("Add_an_Activity_to_the_Database_Admin")]
         public async Task<IActionResult> PostNewActivityNameAsync(string activityName)
         {
-            try
+            if (loginEmail == adminAccount)
             {
-                var activities = await _context.ReadAllActivitiesAsync();
-                var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == activityName);
-                if (matchingActivity != null)
+                try
                 {
-                    return BadRequest("Activity already exists");
+                    var activities = await _context.ReadAllActivitiesAsync();
+                    var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == activityName);
+                    if (matchingActivity != null)
+                    {
+                        return BadRequest("Activity already exists");
+                    }
+                    else
+                    {
+                        await _context.NewActivityNameAsync(activityName);
+                        return Ok("New activity made");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    await _context.NewActivityNameAsync(activityName);
-                    return Ok("New activity made");
+                    return StatusCode(500, $"Internal Server Error: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal Server Error: {ex.Message}");
-            }
+            return BadRequest("You don't have permision to run this command");
         }
 
         //Adding a new user
@@ -244,41 +275,81 @@ namespace COMP2001_CW2.Controllers
         [HttpDelete("Delete_a_User_Admin")]
         public async Task<IActionResult> DeleteAccountAsync(string email)
         {
-            try
+            if (loginEmail == adminAccount)
             {
-                var accounts = await _context.AllAccountDetailsAsync();
-                var takenAccount = accounts.FirstOrDefault(a => a.Email == email);
-                if (takenAccount != null)
+                try
                 {
-                    await _context.DeleteAccountAsync(email);
-                    return Ok("Account deleted");
+                    var accounts = await _context.AllAccountDetailsAsync();
+                    var takenAccount = accounts.FirstOrDefault(a => a.Email == email);
+                    if (takenAccount != null)
+                    {
+                        await _context.DeleteAccountAsync(email);
+                        return Ok("Account deleted");
+                    }
+                    else
+                    {
+                        return BadRequest("The account doesn't exist");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    return BadRequest("The account doesn't exist");
+                    return StatusCode(500, $"Internal Server Error: {ex.Message}");
                 }
             }
-            catch(Exception ex)
-            {
-                return StatusCode(500, $"Internal Server Error: {ex.Message}");
-            }
+            return BadRequest("You don't have permision to run this command");
         }
 
         //Delete an activity linked to an account
         [HttpDelete("Delete_an_Activity_From_Your_Account")]
         public async Task<IActionResult> DeleteActivityLinkAsync(string email, string activityName)
         {
-            try
+            if (email == loginEmail || loginEmail == adminAccount)
             {
-                var activitiesInAccount = await _context.ReadAccountActivitiesAsync(email);
-                if (activitiesInAccount.Any(a => a.ActivityName == activityName))
+                try
+                {
+                    var activitiesInAccount = await _context.ReadAccountActivitiesAsync(email);
+                    if (activitiesInAccount.Any(a => a.ActivityName == activityName))
+                    {
+                        var activities = await _context.ReadAllActivitiesAsync();
+                        var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == activityName);
+                        if (matchingActivity != null)
+                        {
+                            int id = matchingActivity.ActivityID;
+                            await _context.DeleteActivityFromAccountAsync(email, id);
+                            return Ok("Activity deleted");
+                        }
+                        else
+                        {
+                            return BadRequest("Activity doesn't exist");
+                        }
+                    }
+                    else
+                    {
+                        return BadRequest("You don't have this activity on the account");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"Internal Server Error: {ex.Message}");
+                }
+            }
+            return BadRequest("You don't have permision to run this command");
+        }
+
+        //Delete an activity linked to an account
+        [HttpDelete("Delete_an_Activity_From_System_Admin")]
+        public async Task<IActionResult> DeleteActivityAsync(string activityName)
+        {
+            if (loginEmail == adminAccount)
+            {
+                try
                 {
                     var activities = await _context.ReadAllActivitiesAsync();
                     var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == activityName);
                     if (matchingActivity != null)
                     {
                         int id = matchingActivity.ActivityID;
-                        await _context.DeleteActivityFromAccountAsync(email, id);
+                        await _context.DeleteActivityFromSystemAsync(id);
                         return Ok("Activity deleted");
                     }
                     else
@@ -286,45 +357,17 @@ namespace COMP2001_CW2.Controllers
                         return BadRequest("Activity doesn't exist");
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    return BadRequest("You don't have this activity on the account");
+                    return StatusCode(500, $"Internal Server Error: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal Server Error: {ex.Message}");
-            }
-        }
-
-        //Delete an activity linked to an account
-        [HttpDelete("Delete_an_Activity_From_System_Admin")]
-        public async Task<IActionResult> DeleteActivityAsync(string activityName)
-        {
-            try
-            {
-                var activities = await _context.ReadAllActivitiesAsync();
-                var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == activityName);
-                if (matchingActivity != null)
-                {
-                    int id = matchingActivity.ActivityID;
-                    await _context.DeleteActivityFromSystemAsync(id);
-                    return Ok("Activity deleted");
-                }
-                else
-                {
-                    return BadRequest("Activity doesn't exist");
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal Server Error: {ex.Message}");
-            }
+            return BadRequest("You don't have permision to run this command");
         }
 
         //Update the about me of an account
         [HttpPut("Update_Your_About_Me")]
-        public async Task<IActionResult> PutAboutMe(string email, string password, string newAboutMe)
+        public async Task<IActionResult> PutAboutMe(string email, string newAboutMe)
         {
             try
             {
@@ -332,19 +375,18 @@ namespace COMP2001_CW2.Controllers
                 var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                 if(matchingAccounts != null)
                 {
-                    var loginDetails = (await _context.ReadAccountDetailsAdminAsync(email)).FirstOrDefault(a => a.Email == email);
-                    if (password == loginDetails.UserPassword)
+                    if (email == loginEmail || loginEmail == adminAccount)
                     {
                         await _context.UpdateAboutMeAsync(email, newAboutMe);
                         return Ok("About Me updated");
                     }
                     else
                     {
-                        return BadRequest("The login details you have given are incorrect");
+                        return BadRequest("You don't have permision to access this account");
                     }
                 }
                 {
-                    return BadRequest("The login details you have given are incorrect");
+                    return BadRequest("This account doesnt exist");
                 }
             }
             catch (Exception ex)
@@ -355,7 +397,7 @@ namespace COMP2001_CW2.Controllers
 
         //Update the activity speed pace preference of an account
         [HttpPut("Update_Your_Activity_Speed_Pace_Preference")]
-        public async Task<IActionResult> PutActivtiySpeedPacePreference(string email, string password, bool newActivitySpeedPacePreference)
+        public async Task<IActionResult> PutActivtiySpeedPacePreference(string email, bool newActivitySpeedPacePreference)
         {
             try
             {
@@ -363,19 +405,19 @@ namespace COMP2001_CW2.Controllers
                 var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                 if (matchingAccounts != null)
                 {
-                    var loginDetails = (await _context.ReadAccountDetailsAdminAsync(email)).FirstOrDefault(a => a.Email == email);
-                    if (password == loginDetails.UserPassword)
+                    if (email == loginEmail || loginEmail == adminAccount)
                     {
                         await _context.UpdateActivitySpeedPacePreferenceAsync(email, newActivitySpeedPacePreference);
                         return Ok("Activity speed/pace preference updated");
                     }
                     else
                     {
-                        return BadRequest("The login details you have given are incorrect");
+                        return BadRequest("You don't have permision to access this account");
                     }
                 }
+                else
                 {
-                    return BadRequest("The login details you have given are incorrect");
+                    return BadRequest("This account doesnt exist");
                 }
             }
             catch (Exception ex)
@@ -386,7 +428,7 @@ namespace COMP2001_CW2.Controllers
 
         //Update the birthday of an account
         [HttpPut("Update_Your_Birthday")]
-        public async Task<IActionResult> PutBirthday(string email, string password, DateOnly newBirthday)
+        public async Task<IActionResult> PutBirthday(string email, DateOnly newBirthday)
         {
             try
             {
@@ -394,8 +436,7 @@ namespace COMP2001_CW2.Controllers
                 var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                 if (matchingAccounts != null)
                 {
-                    var loginDetails = (await _context.ReadAccountDetailsAdminAsync(email)).FirstOrDefault(a => a.Email == email);
-                    if (password == loginDetails.UserPassword)
+                    if (email == loginEmail || loginEmail == adminAccount)
                     {
                         string dateFormated = newBirthday.ToString("yyyy-MM-dd");
 
@@ -404,11 +445,11 @@ namespace COMP2001_CW2.Controllers
                     }
                     else
                     {
-                        return BadRequest("The login details you have given are incorrect");
+                        return BadRequest("You don't have permision to access this account");
                     }
                 }
                 {
-                    return BadRequest("The login details you have given are incorrect");
+                    return BadRequest("This account doesnt exist");
                 }
             }
             catch (Exception ex)
@@ -419,7 +460,7 @@ namespace COMP2001_CW2.Controllers
 
         //Update the email of an account
         [HttpPut("Update_Your_Email")]
-        public async Task<IActionResult> PutEmail(string email, string password, string newEmail)
+        public async Task<IActionResult> PutEmail(string email, string newEmail)
         {
             try
             {
@@ -427,8 +468,7 @@ namespace COMP2001_CW2.Controllers
                 var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                 if (matchingAccounts != null)
                 {
-                    var loginDetails = (await _context.ReadAccountDetailsAdminAsync(email)).FirstOrDefault(a => a.Email == email);
-                    if (password == loginDetails.UserPassword)
+                    if (email == loginEmail || loginEmail == adminAccount)
                     {
                         if(accounts.FirstOrDefault(a => a.Email == newEmail) == null)
                         {
@@ -442,11 +482,11 @@ namespace COMP2001_CW2.Controllers
                     }
                     else
                     {
-                        return BadRequest("The login details you have given are incorrect");
+                        return BadRequest("You don't have permision to access this account");
                     }
                 }
                 {
-                    return BadRequest("The login details you have given are incorrect");
+                    return BadRequest("This account doesnt exist");
                 }
             }
             catch (Exception ex)
@@ -457,7 +497,7 @@ namespace COMP2001_CW2.Controllers
 
         //Update the first name of an account
         [HttpPut("Update_Your_First_Name")]
-        public async Task<IActionResult> PutFirstName(string email, string password, string newFirstName)
+        public async Task<IActionResult> PutFirstName(string email, string newFirstName)
         {
             try
             {
@@ -465,19 +505,18 @@ namespace COMP2001_CW2.Controllers
                 var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                 if (matchingAccounts != null)
                 {
-                    var loginDetails = (await _context.ReadAccountDetailsAdminAsync(email)).FirstOrDefault(a => a.Email == email);
-                    if (password == loginDetails.UserPassword)
+                    if (email == loginEmail || loginEmail == adminAccount)
                     {
                         await _context.UpdateFirstNameAsync(email, newFirstName);
                         return Ok("First name updated");
                     }
                     else
                     {
-                        return BadRequest("The login details you have given are incorrect");
+                        return BadRequest("You don't have permision to access this account");
                     }
                 }
                 {
-                    return BadRequest("The login details you have given are incorrect");
+                    return BadRequest("This account doesnt exist");
                 }
             }
             catch (Exception ex)
@@ -488,7 +527,7 @@ namespace COMP2001_CW2.Controllers
 
         //Update the height of an account
         [HttpPut("Update_Your_Height")]
-        public async Task<IActionResult> PutHeight(string email, string password, double newUserHeight)
+        public async Task<IActionResult> PutHeight(string email, double newUserHeight)
         {
             try
             {
@@ -496,19 +535,18 @@ namespace COMP2001_CW2.Controllers
                 var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                 if (matchingAccounts != null)
                 {
-                    var loginDetails = (await _context.ReadAccountDetailsAdminAsync(email)).FirstOrDefault(a => a.Email == email);
-                    if (password == loginDetails.UserPassword)
+                    if (email == loginEmail || loginEmail == adminAccount)
                     {
                         await _context.UpdateHeightAsync(email, newUserHeight);
                         return Ok("Height updated");
                     }
                     else
                     {
-                        return BadRequest("The login details you have given are incorrect");
+                        return BadRequest("You don't have permision to access this account");
                     }
                 }
                 {
-                    return BadRequest("The login details you have given are incorrect");
+                    return BadRequest("This account doesnt exist");
                 }
             }
             catch (Exception ex)
@@ -519,7 +557,7 @@ namespace COMP2001_CW2.Controllers
 
         //Update the last name of an account
         [HttpPut("Update_Your_Last_Name")]
-        public async Task<IActionResult> PutLastName(string email, string password, string newLastName)
+        public async Task<IActionResult> PutLastName(string email, string newLastName)
         {
             try
             {
@@ -527,19 +565,18 @@ namespace COMP2001_CW2.Controllers
                 var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                 if (matchingAccounts != null)
                 {
-                    var loginDetails = (await _context.ReadAccountDetailsAdminAsync(email)).FirstOrDefault(a => a.Email == email);
-                    if (password == loginDetails.UserPassword)
+                    if (email == loginEmail || loginEmail == adminAccount)
                     {
                         await _context.UpdateLastNameAsync(email, newLastName);
                         return Ok("Last name updated");
                     }
                     else
                     {
-                        return BadRequest("The login details you have given are incorrect");
+                        return BadRequest("You don't have permision to access this account");
                     }
                 }
                 {
-                    return BadRequest("The login details you have given are incorrect");
+                    return BadRequest("This account doesnt exist");
                 }
             }
             catch (Exception ex)
@@ -550,7 +587,7 @@ namespace COMP2001_CW2.Controllers
 
         //Update the member location of an account
         [HttpPut("Update_Your_Member_Location")]
-        public async Task<IActionResult> PutMemberLocation(string email, string password, string newMemberLocation)
+        public async Task<IActionResult> PutMemberLocation(string email, string newMemberLocation)
         {
             try
             {
@@ -558,19 +595,18 @@ namespace COMP2001_CW2.Controllers
                 var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                 if (matchingAccounts != null)
                 {
-                    var loginDetails = (await _context.ReadAccountDetailsAdminAsync(email)).FirstOrDefault(a => a.Email == email);
-                    if (password == loginDetails.UserPassword)
+                    if (email == loginEmail || loginEmail == adminAccount)
                     {
                         await _context.UpdateMemberLocationAsync(email, newMemberLocation);
                         return Ok("Member Location updated");
                     }
                     else
                     {
-                        return BadRequest("The login details you have given are incorrect");
+                        return BadRequest("You don't have permision to access this account");
                     }
                 }
                 {
-                    return BadRequest("The login details you have given are incorrect");
+                    return BadRequest("This account doesnt exist");
                 }
             }
             catch (Exception ex)
@@ -581,7 +617,7 @@ namespace COMP2001_CW2.Controllers
 
         //Update the profile picture of an account
         [HttpPut("Update_Your_Profile_Picture")]
-        public async Task<IActionResult> PutProfilePicture(string email, string password, string newProfilePicture)
+        public async Task<IActionResult> PutProfilePicture(string email, string newProfilePicture)
         {
             try
             {
@@ -589,8 +625,7 @@ namespace COMP2001_CW2.Controllers
                 var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                 if (matchingAccounts != null)
                 {
-                    var loginDetails = (await _context.ReadAccountDetailsAdminAsync(email)).FirstOrDefault(a => a.Email == email);
-                    if (password == loginDetails.UserPassword)
+                    if (email == loginEmail || loginEmail == adminAccount)
                     {
                         byte[] profilePictureBytes;
                         using (HttpClient client = new HttpClient()) { profilePictureBytes = await client.GetByteArrayAsync(newProfilePicture); }
@@ -600,11 +635,11 @@ namespace COMP2001_CW2.Controllers
                     }
                     else
                     {
-                        return BadRequest("The login details you have given are incorrect");
+                        return BadRequest("You don't have permision to access this account");
                     }
                 }
                 {
-                    return BadRequest("The login details you have given are incorrect");
+                    return BadRequest("This account doesnt exist");
                 }
             }
             catch (Exception ex)
@@ -615,7 +650,7 @@ namespace COMP2001_CW2.Controllers
 
         //Update the units of an account
         [HttpPut("Update_Your_Units")]
-        public async Task<IActionResult> PutUnits(string email, string password, bool newUnits)
+        public async Task<IActionResult> PutUnits(string email, bool newUnits)
         {
             try
             {
@@ -623,19 +658,18 @@ namespace COMP2001_CW2.Controllers
                 var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                 if (matchingAccounts != null)
                 {
-                    var loginDetails = (await _context.ReadAccountDetailsAdminAsync(email)).FirstOrDefault(a => a.Email == email);
-                    if (password == loginDetails.UserPassword)
+                    if (email == loginEmail || loginEmail == adminAccount)
                     {
                         await _context.UpdateUnitsAsync(email, newUnits);
                         return Ok("Units updated");
                     }
                     else
                     {
-                        return BadRequest("The login details you have given are incorrect");
+                        return BadRequest("You don't have permision to access this account");
                     }
                 }
                 {
-                    return BadRequest("The login details you have given are incorrect");
+                    return BadRequest("This account doesnt exist");
                 }
             }
             catch (Exception ex)
@@ -646,7 +680,7 @@ namespace COMP2001_CW2.Controllers
 
         //Update the username of an account
         [HttpPut("Update_Your_Username")]
-        public async Task<IActionResult> PutUsername(string email, string password, string newUsername)
+        public async Task<IActionResult> PutUsername(string email, string newUsername)
         {
             try
             {
@@ -654,19 +688,18 @@ namespace COMP2001_CW2.Controllers
                 var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                 if (matchingAccounts != null)
                 {
-                    var loginDetails = (await _context.ReadAccountDetailsAdminAsync(email)).FirstOrDefault(a => a.Email == email);
-                    if (password == loginDetails.UserPassword)
+                    if (email == loginEmail || loginEmail == adminAccount)
                     {
                         await _context.UpdateUsernameAsync(email, newUsername);
                         return Ok("Username updated");
                     }
                     else
                     {
-                        return BadRequest("The login details you have given are incorrect");
+                        return BadRequest("You don't have permision to access this account");
                     }
                 }
                 {
-                    return BadRequest("The login details you have given are incorrect");
+                    return BadRequest("This account doesnt exist");
                 }
             }
             catch (Exception ex)
@@ -677,7 +710,7 @@ namespace COMP2001_CW2.Controllers
 
         //Update the Password of an account
         [HttpPut("Update_Your_Password")]
-        public async Task<IActionResult> PutPassword(string email, string password, string newUserPassword)
+        public async Task<IActionResult> PutPassword(string email, string newUserPassword)
         {
             try
             {
@@ -685,19 +718,18 @@ namespace COMP2001_CW2.Controllers
                 var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                 if (matchingAccounts != null)
                 {
-                    var loginDetails = (await _context.ReadAccountDetailsAdminAsync(email)).FirstOrDefault(a => a.Email == email);
-                    if (password == loginDetails.UserPassword)
+                    if (email == loginEmail || loginEmail == adminAccount)
                     {
                         await _context.UpdateUserPasswordAsync(email, newUserPassword);
                         return Ok("Password updated");
                     }
                     else
                     {
-                        return BadRequest("The login details you have given are incorrect");
+                        return BadRequest("You don't have permision to access this account");
                     }
                 }
                 {
-                    return BadRequest("The login details you have given are incorrect");
+                    return BadRequest("This account doesnt exist");
                 }
             }
             catch (Exception ex)
@@ -708,7 +740,7 @@ namespace COMP2001_CW2.Controllers
 
         //Update the weight for an account
         [HttpPut("Update_Your_Weight")]
-        public async Task<IActionResult> PutWeight(string email, string password, double newWeight)
+        public async Task<IActionResult> PutWeight(string email, double newWeight)
         {
             try
             {
@@ -716,19 +748,18 @@ namespace COMP2001_CW2.Controllers
                 var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                 if (matchingAccounts != null)
                 {
-                    var loginDetails = (await _context.ReadAccountDetailsAdminAsync(email)).FirstOrDefault(a => a.Email == email);
-                    if (password == loginDetails.UserPassword)
+                    if (email == loginEmail || loginEmail == adminAccount)
                     {
                         await _context.UpdateWeightAsync(email, newWeight);
                         return Ok("Weight updated");
                     }
                     else
                     {
-                        return BadRequest("The login details you have given are incorrect");
+                        return BadRequest("You don't have permision to access this account");
                     }
                 }
                 {
-                    return BadRequest("The login details you have given are incorrect");
+                    return BadRequest("This account doesnt exist");
                 }
             }
             catch (Exception ex)
