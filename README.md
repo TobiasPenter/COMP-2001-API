@@ -6,34 +6,34 @@ This repository holds my code from throughout my development of the API for the 
 ## End Points
 
 ### Get
-\nRead_Account_Details
-\nAll_Account_Details_Admin
-\nRead_Account_Details_Admin_Owner
-\nRead_All_Activities
-\nRead_Measurements_For_Account
-\nRead_Activities_For_Account
+1. Read_Account_Details
+2. All_Account_Details_Admin
+3. Read_Account_Details_Admin_Owner
+4. Read_All_Activities
+5. Read_Measurements_For_Account
+6. Read_Activities_For_Account
 
 ### Post
-Add_an_Activity_to_Your_Account
-Add_an_Activity_to_the_Database_Admin
-Create_an_Account
+1. Add_an_Activity_to_Your_Account
+2. Add_an_Activity_to_the_Database_Admin
+3. Create_an_Account
 
 ### Delete
-Delete_a_User_Admin
-Delete_an_Activity_From_Your_Account
-Delete_an_Activity_From_System_Admin
+1. Delete_a_User_Admin
+2. Delete_an_Activity_From_Your_Account
+3. Delete_an_Activity_From_System_Admin
 
 ###Put
-Update_Your_About_Me
-Update_Your_Activity_Speed_Pace_Preference
-Update_Your_Birthday
-Update_Your_Email
-Update_Your_First_Name
-Update_Your_Height
-Update_Your_Last_Name
-Update_Your_Member_Location
-Update_Your_Profile_Picture
-Update_Your_Units
-Update_Your_Username
-Update_Your_Password
-Update_Your_Weight
+1. Update_Your_About_Me
+2. Update_Your_Activity_Speed_Pace_Preference
+3. Update_Your_Birthday
+4. Update_Your_Email
+5. Update_Your_First_Name
+6. Update_Your_Height
+7. Update_Your_Last_Name
+8. Update_Your_Member_Location
+9. Update_Your_Profile_Picture
+10. Update_Your_Units
+11. Update_Your_Username
+12. Update_Your_Password
+13. Update_Your_Weight
