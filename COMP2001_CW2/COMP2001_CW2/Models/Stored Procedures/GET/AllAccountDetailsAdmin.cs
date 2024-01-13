@@ -29,7 +29,7 @@ namespace COMP2001_CW2.Models.Stored_Procedures
         [NotNull]
         public bool ActivitySpeedPacePreference { get; set; }
         [NotNull]
-        public DateTime? Birthday { get; set; }
+        public DateOnly Birthday { get; set; }
 
     }
 }

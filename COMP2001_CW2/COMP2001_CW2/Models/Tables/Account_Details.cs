@@ -31,7 +31,7 @@ namespace COMP2001_CW2.Models.Tables
         [NotNull]
         public bool ActivitySpeedPacePreference { get; set; }
         [NotNull]
-        public DateTime? Birthday { get; set; }
+        public DateOnly Birthday { get; set; }
 
         //Setup foreign keys for other tables
         public List<Activity_Link_Table> activityLinkTableLink { get; set; }
