@@ -213,7 +213,7 @@ namespace COMP2001_CW2.Context
                 new SqlParameter("@UserWeight", weight));
         }
 
-        public async Task NewUserAsync(string email, string firstName, string lastName, string username, string password, byte[] profilePicture, string aboutMe, string memberLocation, bool activitySpeedPacePreference, string birthday)
+        public async Task NewUserAsync(string email, string firstName, string lastName, string username, string password, byte[] profilePicture, string aboutMe, string memberLocation, bool activitySpeedPacePreference, DateOnly birthday)
         {
             await Database.ExecuteSqlRawAsync("EXEC CW2.NewUser @Email, @FirstName, @LastName, @Username, @UserPassword, @ProfilePicture, @AboutMe, @MemberLocation, @ActivitySpeedPacePreference, @Birthday",
                 new SqlParameter("@Email", email),
@@ -255,7 +255,7 @@ namespace COMP2001_CW2.Context
             await Database.ExecuteSqlRawAsync("EXEC CW2.UpdateActivitySpeedPacePreference @Email, @NewActivitySpeedPacePreference", new SqlParameter("@Email", email), new SqlParameter("@NewActivitySpeedPacePreference", newActivitySpeedPacePreference));
         }
 
-        public async Task UpdateBirthdayAsync(string email, string newBirthday)
+        public async Task UpdateBirthdayAsync(string email, DateOnly newBirthday)
         {
             await Database.ExecuteSqlRawAsync("EXEC CW2.UpdateBirthday @Email, @NewBirthday", new SqlParameter("@Email", email), new SqlParameter("@NewBirthday", newBirthday));
         }
