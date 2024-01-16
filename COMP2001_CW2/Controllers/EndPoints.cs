@@ -24,11 +24,11 @@ namespace COMP2001_CW2.Controllers
 
         //Runs my code  for ReadAccountDetails sql and returns the result or a relevant error message
         [HttpGet("Read_Account_Details")]
-        public async Task<IActionResult> GetAccountDetails([FromBody] UserInputs inputs)
+        public async Task<IActionResult> GetAccountDetails(string email)
         {
             try
             {
-                var result = await _context.ReadAccountDetailsAsync((string)inputs.email);
+                var result = await _context.ReadAccountDetailsAsync(email);
 
                 if (result != null && result.Any())
                 {
@@ -78,15 +78,15 @@ namespace COMP2001_CW2.Controllers
 
         //Runs my code for ReadAccountDetailsAdmin sql and returns the result or a relecant error message
         [HttpGet("Read_Account_Details_Admin_Owner")]
-        public async Task<IActionResult> GetAccountDetailsAdmin([FromBody] UserInputs inputs)
+        public async Task<IActionResult> GetAccountDetailsAdmin(string email)
         {
             if (loginStatus == "TRUE")
             {
-                if ((string)inputs.email == loginEmail || loginEmail == adminAccount)
+                if (email == loginEmail || loginEmail == adminAccount)
                 {
                     try
                     {
-                        var result = await _context.ReadAccountDetailsAdminAsync((string)inputs.email);
+                        var result = await _context.ReadAccountDetailsAdminAsync(email);
 
                         if (result != null && result.Any())
                         {
@@ -136,15 +136,15 @@ namespace COMP2001_CW2.Controllers
 
         //Runs my code for ReadMeasurements sql and returns the result or a relecant error message
         [HttpGet("Read_Measurements_For_Account")]
-        public async Task<IActionResult> GetMeasurementsAsync([FromBody] UserInputs inputs)
+        public async Task<IActionResult> GetMeasurementsAsync(string email)
         {
             if (loginStatus == "TRUE")
             {
-                if ((string)inputs.email == loginEmail || loginEmail == adminAccount)
+                if (email == loginEmail || loginEmail == adminAccount)
                 {
                     try
                     {
-                        var result = await _context.ReadMeasurementsAsync((string)inputs.email);
+                        var result = await _context.ReadMeasurementsAsync(email);
 
                         if (result != null && result.Any())
                         {
@@ -167,15 +167,15 @@ namespace COMP2001_CW2.Controllers
 
         //Runs my code for ReadAccountActivities sql and returns the result or a relecant error message
         [HttpGet("Read_Activities_For_Account")]
-        public async Task<IActionResult> GetAccountActivities([FromBody] UserInputs inputs)
+        public async Task<IActionResult> GetAccountActivities(string email)
         {
             if (loginStatus == "TRUE")
             {
-                if ((string)inputs.email == loginEmail || loginEmail == adminAccount)
+                if (email == loginEmail || loginEmail == adminAccount)
                 {
                     try
                     {
-                        var result = await _context.ReadAccountActivitiesAsync((string)inputs.email);
+                        var result = await _context.ReadAccountActivitiesAsync(email);
 
                         if (result != null && result.Any())
                         {
@@ -198,27 +198,27 @@ namespace COMP2001_CW2.Controllers
 
         //Adding a tag to an account
         [HttpPost("Add_an_Activity_to_Your_Account")]
-        public async Task<IActionResult> PostNewActivityAsync([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PostNewActivityAsync(string email, string activityName)
         {
             if (loginStatus == "TRUE")
             {
-                if ((string)inputs.email == loginEmail || loginEmail == adminAccount)
+                if (email == loginEmail || loginEmail == adminAccount)
                 {
                     try
                     {
-                        var activitiesInAccount = await _context.ReadAccountActivitiesAsync((string)inputs.email);
-                        if (activitiesInAccount.Any(a => a.ActivityName == (string)inputs.activityName))
+                        var activitiesInAccount = await _context.ReadAccountActivitiesAsync(email);
+                        if (activitiesInAccount.Any(a => a.ActivityName == activityName))
                         {
                             return BadRequest("You already have this activity on the account");
                         }
                         else
                         {
                             var activities = await _context.ReadAllActivitiesAsync();
-                            var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == (string)inputs.activityName);
+                            var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == (activityName));
                             if (matchingActivity != null)
                             {
                                 int id = matchingActivity.ActivityID;
-                                await _context.NewActivityLinkAsync((string)inputs.email, id);
+                                await _context.NewActivityLinkAsync(email, id);
                                 return Ok("Activity saved");
                             }
                             else
@@ -239,7 +239,7 @@ namespace COMP2001_CW2.Controllers
 
         //Adding a new tag option
         [HttpPost("Add_an_Activity_to_the_Database_Admin")]
-        public async Task<IActionResult> PostNewActivityNameAsync([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PostNewActivityNameAsync(string activityName)
         {
             if (loginStatus == "TRUE")
             {
@@ -248,14 +248,14 @@ namespace COMP2001_CW2.Controllers
                     try
                     {
                         var activities = await _context.ReadAllActivitiesAsync();
-                        var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == (string)inputs.activityName);
+                        var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == activityName);
                         if (matchingActivity != null)
                         {
                             return BadRequest("Activity already exists");
                         }
                         else
                         {
-                            await _context.NewActivityNameAsync((string)inputs.activityName);
+                            await _context.NewActivityNameAsync(activityName);
                             return Ok("New activity made");
                         }
                     }
@@ -271,12 +271,12 @@ namespace COMP2001_CW2.Controllers
 
         //Adding a new user
         [HttpPost("Create_an_Account")]
-        public async Task<IActionResult> PostNewAccountAsync([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PostNewAccountAsync(string email, string username, string firstName, string lastName, string password, DateOnly newBirthday, string profilePicture, string aboutMe, string memberLocation, bool activitySpeedPacePreference, bool units, double weight, double height)
         {
             try
             {
                 var accounts = await _context.AllAccountDetailsAsync();
-                var takenAccount = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                var takenAccount = accounts.FirstOrDefault(a => a.Email == email);
                 if (takenAccount != null)
                 {
                     return BadRequest("Email already in use");
@@ -284,14 +284,14 @@ namespace COMP2001_CW2.Controllers
                 else
                 {
 
-                    DateOnly unformatedDate = (DateOnly)inputs.newBirthday;
+                    DateOnly unformatedDate = newBirthday;
                     string formatedDate = unformatedDate.ToString();
 
                     byte[] profilePictureBytes;
-                    using (HttpClient client = new HttpClient()) { profilePictureBytes = await client.GetByteArrayAsync((string)inputs.profilePicture); }
+                    using (HttpClient client = new HttpClient()) { profilePictureBytes = await client.GetByteArrayAsync(profilePicture); }
 
-                    await _context.NewUserAsync((string)inputs.email, (string)inputs.firstName, (string)inputs.lastName, (string)inputs.username, (string)inputs.password, profilePictureBytes, (string)inputs.aboutMe, (string)inputs.memberLocation, (bool)inputs.activitySpeedPacePreference, formatedDate);
-                    await _context.NewMeasurementsAsync((string)inputs.email, (bool)inputs.units, (double)inputs.weight, (double)inputs.height);
+                    await _context.NewUserAsync(email, firstName, lastName, username, password, profilePictureBytes, aboutMe, memberLocation, activitySpeedPacePreference, formatedDate);
+                    await _context.NewMeasurementsAsync(email, units, weight, height);
 
                     return Ok("Account made");
                 }
@@ -304,7 +304,7 @@ namespace COMP2001_CW2.Controllers
 
         //Delete an account
         [HttpDelete("Delete_a_User_Admin")]
-        public async Task<IActionResult> DeleteAccountAsync([FromBody] UserInputs inputs)
+        public async Task<IActionResult> DeleteAccountAsync(string email)
         {
             if (loginStatus == "TRUE")
             {
@@ -313,10 +313,10 @@ namespace COMP2001_CW2.Controllers
                     try
                     {
                         var accounts = await _context.AllAccountDetailsAsync();
-                        var takenAccount = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                        var takenAccount = accounts.FirstOrDefault(a => a.Email == email);
                         if (takenAccount != null)
                         {
-                            await _context.DeleteAccountAsync((string)inputs.email);
+                            await _context.DeleteAccountAsync(email);
                             return Ok("Account deleted");
                         }
                         else
@@ -336,23 +336,23 @@ namespace COMP2001_CW2.Controllers
 
         //Delete an activity linked to an account
         [HttpDelete("Delete_an_Activity_From_Your_Account")]
-        public async Task<IActionResult> DeleteActivityLinkAsync([FromBody] UserInputs inputs)
+        public async Task<IActionResult> DeleteActivityLinkAsync(string email, string activityName)
         {
             if (loginStatus == "TRUE")
             {
-                if ((string)inputs.email == loginEmail || loginEmail == adminAccount)
+                if (email == loginEmail || loginEmail == adminAccount)
                 {
                     try
                     {
-                        var activitiesInAccount = await _context.ReadAccountActivitiesAsync((string)inputs.email);
-                        if (activitiesInAccount.Any(a => a.ActivityName == (string)inputs.activityName))
+                        var activitiesInAccount = await _context.ReadAccountActivitiesAsync(email);
+                        if (activitiesInAccount.Any(a => a.ActivityName == activityName))
                         {
                             var activities = await _context.ReadAllActivitiesAsync();
-                            var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == (string)inputs.activityName);
+                            var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == activityName);
                             if (matchingActivity != null)
                             {
                                 int id = matchingActivity.ActivityID;
-                                await _context.DeleteActivityFromAccountAsync((string)inputs.email, id);
+                                await _context.DeleteActivityFromAccountAsync(email, id);
                                 return Ok("Activity deleted");
                             }
                             else
@@ -377,7 +377,7 @@ namespace COMP2001_CW2.Controllers
 
         //Delete an activity linked to an account
         [HttpDelete("Delete_an_Activity_From_System_Admin")]
-        public async Task<IActionResult> DeleteActivityAsync([FromBody] UserInputs inputs)
+        public async Task<IActionResult> DeleteActivityAsync(string activityName)
         {
             if (loginStatus == "TRUE")
             {
@@ -386,7 +386,7 @@ namespace COMP2001_CW2.Controllers
                     try
                     {
                         var activities = await _context.ReadAllActivitiesAsync();
-                        var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == (string)inputs.activityName);
+                        var matchingActivity = activities.FirstOrDefault(a => a.ActivityName == activityName);
                         if (matchingActivity != null)
                         {
                             int id = matchingActivity.ActivityID;
@@ -410,19 +410,19 @@ namespace COMP2001_CW2.Controllers
 
         //Update the about me of an account
         [HttpPut("Update_Your_About_Me")]
-        public async Task<IActionResult> PutAboutMe([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PutAboutMe(string email, string newAboutMe)
         {
             if (loginStatus == "TRUE")
             {
                 try
                 {
                     var accounts = await _context.AllAccountDetailsAsync();
-                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                     if (matchingAccounts != null)
                     {
-                        if ((string)inputs.email == loginEmail)
+                        if (email == loginEmail)
                         {
-                            await _context.UpdateAboutMeAsync((string)inputs.email, (string)inputs.newAboutMe);
+                            await _context.UpdateAboutMeAsync(email, newAboutMe);
                             return Ok("About Me updated");
                         }
                         else
@@ -444,19 +444,19 @@ namespace COMP2001_CW2.Controllers
 
         //Update the activity speed pace preference of an account
         [HttpPut("Update_Your_Activity_Speed_Pace_Preference")]
-        public async Task<IActionResult> PutActivtiySpeedPacePreference([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PutActivtiySpeedPacePreference(string email, bool newActivitySpeedPacePreference)
         {
             if (loginStatus == "TRUE")
             {
                 try
                 {
                     var accounts = await _context.AllAccountDetailsAsync();
-                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                     if (matchingAccounts != null)
                     {
-                        if ((string)inputs.email == loginEmail)
+                        if (email == loginEmail)
                         {
-                            await _context.UpdateActivitySpeedPacePreferenceAsync((string)inputs.email, (bool)inputs.newActivitySpeedPacePreference);
+                            await _context.UpdateActivitySpeedPacePreferenceAsync(email, newActivitySpeedPacePreference);
                             return Ok("Activity speed/pace preference updated");
                         }
                         else
@@ -479,22 +479,22 @@ namespace COMP2001_CW2.Controllers
 
         //Update the birthday of an account
         [HttpPut("Update_Your_Birthday")]
-        public async Task<IActionResult> PutBirthday([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PutBirthday(string email, DateOnly newBirthday)
         {
             if (loginStatus == "TRUE")
             {
                 try
                 {
                     var accounts = await _context.AllAccountDetailsAsync();
-                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                     if (matchingAccounts != null)
                     {
-                        if ((string)inputs.email == loginEmail)
+                        if (email == loginEmail)
                         {
-                            DateOnly unformatedDate = (DateOnly)inputs.newBirthday;
+                            DateOnly unformatedDate = newBirthday;
                             string formatedDate = unformatedDate.ToString();
 
-                            await _context.UpdateBirthdayAsync((string)inputs.email, formatedDate);
+                            await _context.UpdateBirthdayAsync(email, formatedDate);
                             return Ok("Birthday updated");
                         }
                         else
@@ -516,21 +516,21 @@ namespace COMP2001_CW2.Controllers
 
         //Update the email of an account
         [HttpPut("Update_Your_Email")]
-        public async Task<IActionResult> PutEmail([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PutEmail(string email, string newEmail)
         {
             if (loginStatus == "TRUE")
             {
                 try
                 {
                     var accounts = await _context.AllAccountDetailsAsync();
-                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                     if (matchingAccounts != null)
                     {
-                        if ((string)inputs.email == loginEmail)
+                        if (email == loginEmail)
                         {
-                            if (accounts.FirstOrDefault(a => a.Email == (string)inputs.newEmail) == null)
+                            if (accounts.FirstOrDefault(a => a.Email == newEmail) == null)
                             {
-                                await _context.UpdateEmailAsync((string)inputs.email, (string)inputs.newEmail);
+                                await _context.UpdateEmailAsync(email, newEmail);
                                 return Ok("Email updated");
                             }
                             else
@@ -557,17 +557,17 @@ namespace COMP2001_CW2.Controllers
 
         //Update the first name of an account
         [HttpPut("Update_Your_First_Name")]
-        public async Task<IActionResult> PutFirstName([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PutFirstName(string email, string newFirstName)
         {
             try
             {
                 var accounts = await _context.AllAccountDetailsAsync();
-                var matchingAccounts = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                 if (matchingAccounts != null)
                 {
-                    if ((string)inputs.email == loginEmail || loginEmail == adminAccount)
+                    if (email == loginEmail || loginEmail == adminAccount)
                     {
-                        await _context.UpdateFirstNameAsync((string)inputs.email, (string)inputs.newFirstName);
+                        await _context.UpdateFirstNameAsync(email, newFirstName);
                         return Ok("First name updated");
                     }
                     else
@@ -587,19 +587,19 @@ namespace COMP2001_CW2.Controllers
 
         //Update the height of an account
         [HttpPut("Update_Your_Height")]
-        public async Task<IActionResult> PutHeight([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PutHeight(string email, double newHeight)
         {
             if (loginStatus == "TRUE")
             {
                 try
                 {
                     var accounts = await _context.AllAccountDetailsAsync();
-                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                     if (matchingAccounts != null)
                     {
-                        if ((string)inputs.email == loginEmail)
+                        if (email == loginEmail)
                         {
-                            await _context.UpdateHeightAsync((string)inputs.email, (double)inputs.newHeight);
+                            await _context.UpdateHeightAsync(email, newHeight);
                             return Ok("Height updated");
                         }
                         else
@@ -621,19 +621,19 @@ namespace COMP2001_CW2.Controllers
 
         //Update the last name of an account
         [HttpPut("Update_Your_Last_Name")]
-        public async Task<IActionResult> PutLastName([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PutLastName(string email, string newLastName)
         {
             if (loginStatus == "TRUE")
             {
                 try
                 {
                     var accounts = await _context.AllAccountDetailsAsync();
-                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                     if (matchingAccounts != null)
                     {
-                        if ((string)inputs.email == loginEmail || loginEmail == adminAccount)
+                        if (email == loginEmail || loginEmail == adminAccount)
                         {
-                            await _context.UpdateLastNameAsync((string)inputs.email, (string)inputs.newLastName);
+                            await _context.UpdateLastNameAsync(email, newLastName);
                             return Ok("Last name updated");
                         }
                         else
@@ -655,19 +655,19 @@ namespace COMP2001_CW2.Controllers
 
         //Update the member location of an account
         [HttpPut("Update_Your_Member_Location")]
-        public async Task<IActionResult> PutMemberLocation([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PutMemberLocation(string email, string newMemberLocation)
         {
             if (loginStatus == "TRUE")
             {
                 try
                 {
                     var accounts = await _context.AllAccountDetailsAsync();
-                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                     if (matchingAccounts != null)
                     {
-                        if ((string)inputs.email == loginEmail)
+                        if (email == loginEmail)
                         {
-                            await _context.UpdateMemberLocationAsync((string)inputs.email, (string)inputs.newMemberLocation);
+                            await _context.UpdateMemberLocationAsync(email, newMemberLocation);
                             return Ok("Member Location updated");
                         }
                         else
@@ -689,22 +689,22 @@ namespace COMP2001_CW2.Controllers
 
         //Update the profile picture of an account
         [HttpPut("Update_Your_Profile_Picture")]
-        public async Task<IActionResult> PutProfilePicture([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PutProfilePicture(string email, string newProfilePicture)
         {
             if (loginStatus == "TRUE")
             {
                 try
                 {
                     var accounts = await _context.AllAccountDetailsAsync();
-                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                     if (matchingAccounts != null)
                     {
-                        if ((string)inputs.email == loginEmail)
+                        if (email == loginEmail)
                         {
                             byte[] profilePictureBytes;
-                            using (HttpClient client = new HttpClient()) { profilePictureBytes = await client.GetByteArrayAsync((string)inputs.newProfilePicture); }
+                            using (HttpClient client = new HttpClient()) { profilePictureBytes = await client.GetByteArrayAsync(newProfilePicture); }
 
-                            await _context.UpdateProfilePictureAsync((string)inputs.email, profilePictureBytes);
+                            await _context.UpdateProfilePictureAsync(email, profilePictureBytes);
                             return Ok("Profile picture updated");
                         }
                         else
@@ -726,19 +726,19 @@ namespace COMP2001_CW2.Controllers
 
         //Update the units of an account
         [HttpPut("Update_Your_Units")]
-        public async Task<IActionResult> PutUnits([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PutUnits(string email, bool newUnits)
         {
             if (loginStatus == "TRUE")
             {
                 try
                 {
                     var accounts = await _context.AllAccountDetailsAsync();
-                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                     if (matchingAccounts != null)
                     {
-                        if ((string)inputs.email == loginEmail)
+                        if (email == loginEmail)
                         {
-                            await _context.UpdateUnitsAsync((string)inputs.email, (bool)inputs.newUnits);
+                            await _context.UpdateUnitsAsync(email, newUnits);
                             return Ok("Units updated");
                         }
                         else
@@ -760,19 +760,19 @@ namespace COMP2001_CW2.Controllers
 
         //Update the username of an account
         [HttpPut("Update_Your_Username")]
-        public async Task<IActionResult> PutUsername([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PutUsername(string email, string newUsername)
         {
             if (loginStatus == "TRUE")
             {
                 try
                 {
                     var accounts = await _context.AllAccountDetailsAsync();
-                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                     if (matchingAccounts != null)
                     {
-                        if ((string)inputs.email == loginEmail)
+                        if (email == loginEmail)
                         {
-                            await _context.UpdateUsernameAsync((string)inputs.email, (string)inputs.newUsername);
+                            await _context.UpdateUsernameAsync(email, newUsername);
                             return Ok("Username updated");
                         }
                         else
@@ -794,19 +794,19 @@ namespace COMP2001_CW2.Controllers
 
         //Update the Password of an account
         [HttpPut("Update_Your_Password")]
-        public async Task<IActionResult> PutPassword([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PutPassword(string email, string newUserPassword)
         {
             if (loginStatus == "TRUE")
             {
                 try
                 {
                     var accounts = await _context.AllAccountDetailsAsync();
-                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                     if (matchingAccounts != null)
                     {
-                        if ((string)inputs.email == loginEmail)
+                        if (email == loginEmail)
                         {
-                            await _context.UpdateUserPasswordAsync((string)inputs.email, (string)inputs.newUserPassword);
+                            await _context.UpdateUserPasswordAsync(email, newUserPassword);
                             return Ok("Password updated");
                         }
                         else
@@ -828,19 +828,19 @@ namespace COMP2001_CW2.Controllers
 
         //Update the weight for an account
         [HttpPut("Update_Your_Weight")]
-        public async Task<IActionResult> PutWeight([FromBody] UserInputs inputs)
+        public async Task<IActionResult> PutWeight(string email, double newWeight)
         {
             if (loginStatus == "TRUE")
             {
                 try
                 {
                     var accounts = await _context.AllAccountDetailsAsync();
-                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == (string)inputs.email);
+                    var matchingAccounts = accounts.FirstOrDefault(a => a.Email == email);
                     if (matchingAccounts != null)
                     {
-                        if ((string)inputs.email == loginEmail)
+                        if (email == loginEmail)
                         {
-                            await _context.UpdateWeightAsync((string)inputs.email, (double)inputs.newWeight);
+                            await _context.UpdateWeightAsync(email, newWeight);
                             return Ok("Weight updated");
                         }
                         else
